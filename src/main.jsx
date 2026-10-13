@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowDown,
@@ -17,12 +16,46 @@ import {
   ExternalLink,
   Monitor,
   BriefcaseBusiness,
+  House,
+  FolderKanban,
+  UserRound,
+  Wrench,
+  Contact,
 } from "lucide-react";
 
 import "./styles.css";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+
+  useEffect(() => {
+    const sectionIds = ["home", "projects", "about", "skills", "contact"];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!sections.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSections = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleSections.length > 0) {
+          setActiveSection(visibleSections[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -55% 0px",
+        threshold: [0, 0.1, 0.25, 0.5],
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   const projects = [
     {
@@ -30,7 +63,7 @@ function App() {
       name: "CareerBridge Kenya",
       category: "CAREER & EMPLOYMENT PLATFORM",
       description:
-        "A platform designed to connect Kenyan students, graduates and professionals with job opportunities, internships, industrial attachments and graduate trainee programmes.",
+        "A platform designed to connect Kenyan students, graduates and professionalswith job opportunities, internships, industrial attachments and graduate trainee programmes.",
       features: [
         "Job and internship opportunities",
         "Employer and applicant accounts",
@@ -112,7 +145,7 @@ function App() {
         }
         a { color: inherit; text-decoration: none; }
         button { font: inherit; }
-        .portfolio { min-height: 100vh; overflow: hidden; }
+        .portfolio { min-height: 100vh; overflow-x: clip; }
         .container { width: min(1120px, 90%); margin: 0 auto; }
 
         .navbar {
@@ -157,8 +190,8 @@ function App() {
           position: relative;
           padding: 112px 0 100px;
           background:
-            radial-gradient(ellipse at 78% 18%, rgba(91, 114, 255, .17), transparent 37%),
-            radial-gradient(ellipse at 12% 78%, rgba(48, 202, 205, .08), transparent 36%);
+            radial-gradient(ellipse at 78% 18%, rgba(91, 114, 255, .17), transparent37%),
+            radial-gradient(ellipse at 12% 78%, rgba(48, 202, 205, .08), transparent36%);
         }
         .hero-grid {
           display: grid;
@@ -201,7 +234,7 @@ function App() {
           font-size: 17px;
           line-height: 1.9;
         }
-        .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px;}
         .button {
           display: inline-flex;
           justify-content: center;
@@ -307,7 +340,7 @@ function App() {
           margin-top: 24px; color: #a9bcff; font-size: 12px; font-weight: 800;
         }
 
-        .about-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 60px; }
+        .about-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 60px;}
         .about-panel {
           padding: 28px; border-radius: 18px;
           border: 1px solid var(--line);
@@ -315,7 +348,7 @@ function App() {
         }
         .about-panel p { color: var(--muted); line-height: 1.9; font-size: 14px; }
         .about-facts { display: grid; gap: 16px; margin-top: 25px; }
-        .about-fact { display: flex; align-items: center; gap: 12px; color: #d9e0ef; font-size: 13px; }
+        .about-fact { display: flex; align-items: center; gap: 12px; color: #d9e0ef;font-size: 13px; }
         .fact-icon { color: var(--cyan); }
         .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .skill-card { padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
@@ -339,6 +372,63 @@ function App() {
         .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
         .footer-inner p { color: var(--muted); font-size: 11px; }
         .footer-mark { color: var(--blue); font-weight: 800; }
+
+
+        /* Fixed section navigation */
+        .section-sidebar { display: none; }
+
+        @media (min-width: 1280px) {
+          .portfolio { padding-left: 165px; }
+
+          .section-sidebar {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            width: 132px;
+            padding: 17px 10px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(16, 22, 37, 0.94);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+            z-index: 30;
+          }
+
+          .sidebar-heading {
+            padding: 3px 8px 12px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+          }
+
+          .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 9px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 11px;
+            transition: color 0.2s, background 0.2s, border-color 0.2s;
+          }
+
+          .sidebar-link svg { flex-shrink: 0; color: #8494b3; }
+          .sidebar-link:hover { color: white; background: rgba(124, 156, 255, 0.08); }
+          .sidebar-link.active {
+            color: var(--cyan);
+            background: rgba(101, 224, 220, 0.08);
+            border-color: rgba(101, 224, 220, 0.17);
+          }
+          .sidebar-link.active svg { color: var(--cyan); }
+          .section-sidebar a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+        }
 
         @media (max-width: 800px) {
           .hero { padding: 75px 0; }
@@ -370,6 +460,25 @@ function App() {
           .contact-panel { padding: 40px 20px; }
         }
       `}</style>
+
+      <nav className="section-sidebar" aria-label="Page sections">
+        <div className="sidebar-heading">Explore</div>
+        <a href="#home" className={`sidebar-link ${activeSection === "home" ? "active" : ""}`} aria-current={activeSection === "home" ? "location" : undefined}>
+          <House size={16} aria-hidden="true" /> <span>Home</span>
+        </a>
+        <a href="#projects" className={`sidebar-link ${activeSection === "projects" ? "active" : ""}`} aria-current={activeSection === "projects" ? "location" : undefined}>
+          <FolderKanban size={16} aria-hidden="true" /> <span>Projects</span>
+        </a>
+        <a href="#about" className={`sidebar-link ${activeSection === "about" ? "active" : ""}`} aria-current={activeSection === "about" ? "location" : undefined}>
+          <UserRound size={16} aria-hidden="true" /> <span>About me</span>
+        </a>
+        <a href="#skills" className={`sidebar-link ${activeSection === "skills" ? "active" : ""}`} aria-current={activeSection === "skills" ? "location" : undefined}>
+          <Wrench size={16} aria-hidden="true" /> <span>Skills</span>
+        </a>
+        <a href="#contact" className={`sidebar-link ${activeSection === "contact" ? "active" : ""}`} aria-current={activeSection === "contact" ? "location" : undefined}>
+          <Contact size={16} aria-hidden="true" /> <span>Contact</span>
+        </a>
+      </nav>
 
       <header className="navbar">
         <div className="container nav-inner">
